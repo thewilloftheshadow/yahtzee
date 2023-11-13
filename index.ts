@@ -6,14 +6,15 @@ import {
 } from "crossbuild"
 import { Game } from "./classes/Game"
 
-export const dice = {
-	1: "<:die_face_1:1173519585656451154> ",
-	2: "<:die_face_2:1173519586562416651> ",
-	3: "<:die_face_3:1173519587652939897> ",
-	4: "<:die_face_4:1173519588567302184> ",
-	5: "<:die_face_5:1173519589431332904>",
-	6: "<:die_face_6:1173519590291144765>",
-}
+export const diceEmoji = [
+	"1173655985986994218", //0 spacer
+	"1173519585656451154", //1
+	"1173519586562416651", //2
+	"1173519587652939897", //3
+	"1173519588567302184", //4
+	"1173519589431332904", //5
+	"1173519590291144765", //6
+]
 
 export const games: Array<Game> = []
 
@@ -61,7 +62,7 @@ const isYourTurn: CustomCheckFunction = async (interaction) => {
 			ephemeral: true,
 		} satisfies GeneratedMessage
 	}
-	if (game.activeTurn?.player.id !== interaction.user!.id) {
+	if (game.activeTurn?.playerId !== interaction.user!.id) {
 		return {
 			content: "It's not your turn",
 			ephemeral: true,

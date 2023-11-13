@@ -9,7 +9,7 @@
   "author": "Shadow",
   "license": "MIT",
   "dependencies": {
-    "crossbuild": "^0.6.1",
+    "crossbuild": "^0.6.2",
     "discord.js": "^14.14.1",
     "strip-indent": "^4.0.0"
   },

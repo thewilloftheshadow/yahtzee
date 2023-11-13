@@ -2,7 +2,7 @@ import { randomUUID } from "crypto"
 import { Player } from "./Player.js"
 import { Turn } from "./Turn.js"
 import { GeneratedMessage, GeneratedMessageObject } from "crossbuild"
-import { bot } from "../index.js"
+import { bot, diceEmoji } from "../index.js"
 import { Client, EmbedBuilder, TextBasedChannel } from "discord.js"
 
 export class Game {
@@ -28,10 +28,10 @@ export class Game {
 
 	startGame() {
 		this.status = "started"
-		this.activeTurn = new Turn(this.players[0])
+		this.activeTurn = new Turn(this.players[0].id)
 		this.sendMessage({
-			content: `<@${this.activeTurn.player.id}>, it's your turn!`,
-			embeds: this.generateCard(this.activeTurn.player.id),
+			content: `<@${this.activeTurn.playerId}>, it's your turn!`,
+			embeds: this.generateCard(this.activeTurn.playerId),
 			components: [
 				{
 					type: 1,
@@ -57,7 +57,9 @@ export class Game {
 			(x) => x.remainingCategoryCount() > 0
 		)
 		if (allPlayers.length === 0) return this.endGame()
-		const index = allPlayers.indexOf(this.activeTurn!.player)
+		const index = allPlayers.findIndex(
+			(x) => x.id === this.activeTurn!.playerId
+		)
 		let player: Player
 		if (index === this.players.length - 1) {
 			player = this.players[0]
@@ -67,13 +69,86 @@ export class Game {
 		return player
 	}
 
-	sendMessage(message: GeneratedMessage) {
+	async sendMessage(message: GeneratedMessage) {
 		const channel = (
 			bot.modules.get("discordInteraction")!.client as Client
 		).channels.resolve(this.channelId) as TextBasedChannel | null
 		if (!channel) throw new Error("uh")
 
-		channel.send(message)
+		const m = await channel.send(message)
+		return m.id
+	}
+
+	async runTurn(playerId: (typeof this.players)[number]["id"]) {
+		const player = this.getPlayer(playerId)!
+		if (!this.activeTurn)
+			throw new Error("There is no active turn. Is the game running?")
+		if (this.activeTurn.playerId !== player.id)
+			throw new Error("It is not your turn!")
+
+		if (this.activeTurn.rolls >= 3) {
+			throw new Error("You are out of rolls. Score your dice!")
+		}
+		this.activeTurn.roll()
+
+		if (this.activeTurn.messageId) {
+			const message = (
+				(
+					bot.modules.get("discordInteraction")!.client as Client
+				).channels.resolve(this.channelId) as TextBasedChannel
+			).messages.resolve(this.activeTurn.messageId)
+			if (message)
+				return message.edit({
+					content: `Roll ${this.activeTurn.rolls}/3`,
+					components: this.generateButtons(
+						this.activeTurn.dice!,
+						this.activeTurn.playerId
+					),
+				})
+		}
+		this.activeTurn.messageId = await this.sendMessage({
+			content: `Roll ${this.activeTurn.rolls}/3`,
+			embeds: this.generateCard(this.activeTurn.playerId),
+			components: this.generateButtons(
+				this.activeTurn.dice!,
+				this.activeTurn.playerId
+			),
+		})
+	}
+
+	generateButtons(
+		dice: NonNullable<typeof Turn.prototype.dice>,
+		playerId: string
+	) {
+		const row: GeneratedMessageObject["components"] = [
+			{
+				type: 1,
+				components: dice.map((x, i) => ({
+					type: 2,
+					style: x.locked ? 4 : 2,
+					emoji: { id: diceEmoji[x.value] ?? diceEmoji[0] },
+					custom_id: `toggle:${playerId},${this.id},${i}`,
+				})),
+			},
+			{
+				type: 1,
+				components: [
+					{
+						type: 2,
+						style: 1,
+						label: "Score Dice",
+						custom_id: `score:${this.id}`,
+					},
+					{
+						type: 2,
+						style: 1,
+						label: "Reroll Red Dice",
+						custom_id: `reroll:${this.id}`,
+					},
+				],
+			},
+		]
+		return row
 	}
 
 	generateCard(

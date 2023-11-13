@@ -19,7 +19,7 @@ export default class Btn extends Component {
 				ephemeral: true,
 			})
 
-		interaction.reply("Starting game...")
+		await interaction.acknowledge({})
 
 		game.startGame()
 	}

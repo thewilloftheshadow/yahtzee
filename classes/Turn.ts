@@ -1,20 +1,39 @@
 import { Player } from "./Player.js"
 
-type Dice = [number, number, number, number, number] | null
+type Die = {
+	value: number
+	locked: boolean
+}
+
+type Dice = [Die, Die, Die, Die, Die] | null
 
 export class Turn {
-	player: Player
+	playerId: Player["id"]
 	dice: Dice = null
 	rolls = 0
-	constructor(player: Player) {
-		this.player = player
+	messageId?: string
+	constructor(playerId: Player["id"]) {
+		this.playerId = playerId
 	}
 	roll() {
-		const dice: Dice = [0, 0, 0, 0, 0]
-		for (let i = 0; i < 5; i++) {
-			dice[i] = Math.floor(Math.random() * 6) + 1
-		}
-		this.rolls += 1
-		this.dice = dice
+		if (!this.dice)
+			this.dice = [
+				{ value: 0, locked: false },
+				{ value: 0, locked: false },
+				{ value: 0, locked: false },
+				{ value: 0, locked: false },
+				{ value: 0, locked: false },
+			]
+		this.dice
+			.filter((x) => !x.locked)
+			.map((x) => {
+				x.value = Math.floor(Math.random() * 6) + 1
+			})
+	}
+
+	toggleDice(index: number) {
+		if (!this.dice) throw new Error("uh")
+		this.dice[index].locked = !this.dice[index].locked
+		return this.dice
 	}
 }

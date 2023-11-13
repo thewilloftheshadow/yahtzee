@@ -3,7 +3,7 @@ import { getGame } from "../index.js"
 
 export default class Btn extends Component {
 	constructor(client: CrossBuild) {
-		super("roll", "button", client, {
+		super("reroll", "button", client, {
 			customChecks: ["isInGame", "isYourTurn"],
 		})
 	}

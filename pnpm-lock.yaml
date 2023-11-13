@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   crossbuild:
-    specifier: ^0.6.1
-    version: 0.6.1
+    specifier: ^0.6.2
+    version: 0.6.2
   discord.js:
     specifier: ^14.14.1
     version: 14.14.1
@@ -99,8 +99,8 @@ packages:
     dev: true
     optional: true
 
-  /@crossbuild/core@0.3.1:
-    resolution: {integrity: sha512-Px3flKH/ber5Ffp8TLIe6d69kI9b9eItIMMp7ATQ9sK5gPDhm5cfMPuvPG3MvH5T3jIpOBUw1onybQ/mjRlgFQ==}
+  /@crossbuild/core@0.3.2:
+    resolution: {integrity: sha512-nDUX/zr8CKXi6q7BjUjKeBFlQ6eaLHXaB/fRS7tPbnBkvhvyqob4eHO+J3elfEbWxUzXAuyxLKXhQjWMFEiKfg==}
     engines: {node: '>=18.17.0'}
     dependencies:
       '@discordjs/collection': 1.5.3
@@ -110,11 +110,11 @@ packages:
       - encoding
     dev: false
 
-  /@crossbuild/discord@0.3.1:
-    resolution: {integrity: sha512-ssYtKitIIGrUI3ltmgvjgYHPXaMSWMtKZy3UW7HTqpR4a1l8vW9t1d9LhuP+jb1Lp+92V9CMVwEnAdQNgP1OJA==}
+  /@crossbuild/discord@0.3.2:
+    resolution: {integrity: sha512-rtLDrEzgpg8Fco8frRfgOYfxo1g2d4Mo05LOzyE2x8kgYbXLzQhIXn6F5C4hlUOQ/JBLo1Nf3MLOgY/z15pTeg==}
     engines: {node: '>=18.17.0'}
     dependencies:
-      '@crossbuild/core': 0.3.1
+      '@crossbuild/core': 0.3.2
       discord.js: 14.14.1
     transitivePeerDependencies:
       - bufferutil
@@ -122,11 +122,11 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@crossbuild/guilded@0.3.1:
-    resolution: {integrity: sha512-dYob09SZqbhXfgnu22aWPaZ6Xx5/usWdIbFNgGu7y+uRiymbXSyRfgfYNwqWCJcVBySPcz0e8iTs6Yq883KhTg==}
+  /@crossbuild/guilded@0.3.2:
+    resolution: {integrity: sha512-FbEh9agoJjlOKisKC1fwHDs6L8JZPR3x5X0cndO0VCxp5XiPO4Oec9tvpQmkREOoz6v2BU/mrtMUmxW/wW94og==}
     engines: {node: '>=18.17.0'}
     dependencies:
-      '@crossbuild/core': 0.3.1
+      '@crossbuild/core': 0.3.2
       guilded.js: 0.23.7
     transitivePeerDependencies:
       - bufferutil
@@ -357,13 +357,13 @@ packages:
       which: 2.0.2
     dev: true
 
-  /crossbuild@0.6.1:
-    resolution: {integrity: sha512-L9KrsTUWCLuR55viCmvkUSlrjG0aKPys4STYigjhIzAJqZ5nWF1cQLnkZ+boas5ZhvEtgZUq3186MD1KHwDIBw==}
+  /crossbuild@0.6.2:
+    resolution: {integrity: sha512-hOXRuMuOmqB5YKvmjI/Cfl0SgLcYemueEgqt6rpJXDsoriD1RKqNRq2xSDM4tqirJKiXGb21JhEG4AUM5HzOpw==}
     engines: {node: '>=18.17.0'}
     dependencies:
-      '@crossbuild/core': 0.3.1
-      '@crossbuild/discord': 0.3.1
-      '@crossbuild/guilded': 0.3.1
+      '@crossbuild/core': 0.3.2
+      '@crossbuild/discord': 0.3.2
+      '@crossbuild/guilded': 0.3.2
       discord-verify: 1.2.0
       discord.js: 14.14.1
       guilded.js: 0.23.7
