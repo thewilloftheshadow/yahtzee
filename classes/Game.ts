@@ -26,10 +26,10 @@ export class Game {
 		this.players.push(new Player(id))
 	}
 
-	startGame() {
+	async startGame() {
 		this.status = "started"
 		this.activeTurn = new Turn(this.players[0].id)
-		this.sendMessage({
+		this.activeTurn.messageId = await this.sendMessage({
 			content: `<@${this.activeTurn.playerId}>, it's your turn!`,
 			embeds: this.generateCard(this.activeTurn.playerId),
 			components: [
@@ -102,6 +102,7 @@ export class Game {
 					content: `Roll ${this.activeTurn.rolls}/3`,
 					components: this.generateButtons(
 						this.activeTurn.dice!,
+						this.activeTurn.rolls,
 						this.activeTurn.playerId
 					),
 				})
@@ -111,6 +112,7 @@ export class Game {
 			embeds: this.generateCard(this.activeTurn.playerId),
 			components: this.generateButtons(
 				this.activeTurn.dice!,
+				this.activeTurn.rolls,
 				this.activeTurn.playerId
 			),
 		})
@@ -118,6 +120,7 @@ export class Game {
 
 	generateButtons(
 		dice: NonNullable<typeof Turn.prototype.dice>,
+		turnCount: number,
 		playerId: string
 	) {
 		const row: GeneratedMessageObject["components"] = [
@@ -125,8 +128,13 @@ export class Game {
 				type: 1,
 				components: dice.map((x, i) => ({
 					type: 2,
-					style: x.locked ? 4 : 2,
-					emoji: { id: diceEmoji[x.value] ?? diceEmoji[0] },
+					style: 2,
+					emoji: {
+						id:
+							diceEmoji[x.value][
+								x.locked ? "locked" : "unlocked"
+							] ?? diceEmoji[0],
+					},
 					custom_id: `toggle:${playerId},${this.id},${i}`,
 				})),
 			},
@@ -142,8 +150,9 @@ export class Game {
 					{
 						type: 2,
 						style: 1,
-						label: "Reroll Red Dice",
+						label: "Reroll Unlocked Dice",
 						custom_id: `reroll:${this.id}`,
+						disabled: dice.every((x) => x.locked) || turnCount >= 3,
 					},
 				],
 			},

@@ -1,7 +1,7 @@
 import { Player } from "./Player.js"
 
 type Die = {
-	value: number
+	value: 0 | 1 | 2 | 3 | 4 | 5 | 6
 	locked: boolean
 }
 
@@ -27,8 +27,9 @@ export class Turn {
 		this.dice
 			.filter((x) => !x.locked)
 			.map((x) => {
-				x.value = Math.floor(Math.random() * 6) + 1
+				x.value = (Math.floor(Math.random() * 6) + 1) as Die["value"]
 			})
+		this.rolls += 1
 	}
 
 	toggleDice(index: number) {

@@ -33,7 +33,11 @@ export default class Btn extends Component {
 		game.activeTurn.toggleDice(parseInt(diceIndex))
 
 		void (interaction.original as ButtonInteraction).message.edit({
-			components: game.generateButtons(game.activeTurn.dice!, playerId),
+			components: game.generateButtons(
+				game.activeTurn.dice!,
+				game.activeTurn!.rolls,
+				playerId
+			),
 		})
 	}
 }
