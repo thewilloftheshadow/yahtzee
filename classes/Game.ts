@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto"
-import { Player } from "./Player.js"
+import { Player, ScorecardKey } from "./Player.js"
 import { Turn } from "./Turn.js"
 import { GeneratedMessage, GeneratedMessageObject } from "crossbuild"
 import { bot, diceEmoji } from "../index.js"
@@ -79,7 +79,10 @@ export class Game {
 		return m.id
 	}
 
-	async runTurn(playerId: (typeof this.players)[number]["id"]) {
+	async runTurn(
+		playerId: (typeof this.players)[number]["id"],
+		resend = false
+	) {
 		const player = this.getPlayer(playerId)!
 		if (!this.activeTurn)
 			throw new Error("There is no active turn. Is the game running?")
@@ -89,7 +92,7 @@ export class Game {
 		if (this.activeTurn.rolls >= 3) {
 			throw new Error("You are out of rolls. Score your dice!")
 		}
-		this.activeTurn.roll()
+		if (!resend) this.activeTurn.roll()
 
 		if (this.activeTurn.messageId) {
 			const message = (
@@ -100,22 +103,75 @@ export class Game {
 			if (message)
 				return message.edit({
 					content: `Roll ${this.activeTurn.rolls}/3`,
-					components: this.generateButtons(
-						this.activeTurn.dice!,
-						this.activeTurn.rolls,
-						this.activeTurn.playerId
-					),
+					components: [
+						...this.generateButtons(
+							this.activeTurn.dice!,
+							this.activeTurn.rolls,
+							this.activeTurn.playerId
+						),
+						...this.generateScoreDropdown(this.activeTurn.dice!),
+					],
 				})
 		}
 		this.activeTurn.messageId = await this.sendMessage({
 			content: `Roll ${this.activeTurn.rolls}/3`,
 			embeds: this.generateCard(this.activeTurn.playerId),
-			components: this.generateButtons(
-				this.activeTurn.dice!,
-				this.activeTurn.rolls,
-				this.activeTurn.playerId
-			),
+			components: [
+				...this.generateButtons(
+					this.activeTurn.dice!,
+					this.activeTurn.rolls,
+					this.activeTurn.playerId
+				),
+				...this.generateScoreDropdown(this.activeTurn.dice!),
+			],
 		})
+	}
+
+	generateScoreDropdown(dice: NonNullable<typeof Turn.prototype.dice>) {
+		if (!this.activeTurn) throw new Error("uh")
+		const player = this.getPlayer(this.activeTurn.playerId)
+		if (!player) throw new Error("uh")
+		const checked: {
+			category: ScorecardKey
+			name: string
+			points: number
+		}[] = []
+		for (const category of Object.keys(player.scorecard)) {
+			const categoryKey = category as ScorecardKey
+			console.log(categoryKey)
+			if (
+				!player.scorecard[categoryKey] &&
+				player.scorecard[categoryKey] !== 0 &&
+				player.getPointsInCategory(categoryKey, dice) !== null
+			) {
+				checked.push({
+					category: categoryKey,
+					name: camelCaseToTitleCase(category),
+					points: player.getPointsInCategory(categoryKey, dice)!,
+				})
+			}
+		}
+
+		console.log(checked)
+
+		const row: GeneratedMessageObject["components"] = [
+			{
+				type: 1,
+				components: [
+					{
+						type: 3,
+						custom_id: `score:${this.id}`,
+						options: checked.map((x) => ({
+							label: `${x.name} (${x.points})`,
+							value: `${x.category}`,
+						})),
+						placeholder: "Score Dice",
+					},
+				],
+			},
+		]
+		console.log(JSON.stringify(row, null, 2))
+		return row
 	}
 
 	generateButtons(
@@ -144,15 +200,15 @@ export class Game {
 					{
 						type: 2,
 						style: 1,
-						label: "Score Dice",
-						custom_id: `score:${this.id}`,
+						label: "Reroll Unlocked Dice",
+						custom_id: `reroll:${this.id}`,
+						disabled: dice.every((x) => x.locked) || turnCount >= 3,
 					},
 					{
 						type: 2,
 						style: 1,
-						label: "Reroll Unlocked Dice",
-						custom_id: `reroll:${this.id}`,
-						disabled: dice.every((x) => x.locked) || turnCount >= 3,
+						label: "Reset Message",
+						custom_id: `resend:${this.id}`,
 					},
 				],
 			},
@@ -200,3 +256,9 @@ export class Game {
 		]
 	}
 }
+
+const camelCaseToTitleCase = (str: string) =>
+	str
+		.replace(/([A-Z])/g, " $1")
+		.replace(/^./, (str) => str.toUpperCase())
+		.trim()
