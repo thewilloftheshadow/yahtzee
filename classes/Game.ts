@@ -52,7 +52,7 @@ export class Game {
 		this.status = "ended"
 	}
 
-	getNextPlayer() {
+	async startNextPlayer() {
 		const allPlayers = this.players.filter(
 			(x) => x.remainingCategoryCount() > 0
 		)
@@ -66,7 +66,25 @@ export class Game {
 		} else {
 			player = this.players[index + 1]
 		}
-		return player
+		this.activeTurn = new Turn(player.id)
+		await this.deleteOldMessage()
+		this.activeTurn.messageId = await this.sendMessage({
+			content: `<@${this.activeTurn.playerId}>, it's your turn!`,
+			embeds: this.generateCard(this.activeTurn.playerId),
+			components: [
+				{
+					type: 1,
+					components: [
+						{
+							type: 2,
+							label: "Roll Dice",
+							style: 3,
+							custom_id: `roll:${this.id}`,
+						},
+					],
+				},
+			],
+		})
 	}
 
 	async sendMessage(message: GeneratedMessage) {
@@ -77,6 +95,16 @@ export class Game {
 
 		const m = await channel.send(message)
 		return m.id
+	}
+
+	async deleteOldMessage() {
+		if (!this.activeTurn?.messageId) throw new Error("uh")
+		const message = (
+			(
+				bot.modules.get("discordInteraction")!.client as Client
+			).channels.resolve(this.channelId) as TextBasedChannel
+		).messages.resolve(this.activeTurn.messageId)
+		if (message) await message.delete().catch(() => {})
 	}
 
 	async runTurn(
@@ -162,7 +190,9 @@ export class Game {
 						type: 3,
 						custom_id: `score:${this.id}`,
 						options: checked.map((x) => ({
-							label: `${x.name} (${x.points})`,
+							label: `${x.name} (${x.points} point${
+								x.points === 1 ? "" : "s"
+							}})`,
 							value: `${x.category}`,
 						})),
 						placeholder: "Score Dice",
@@ -254,6 +284,20 @@ export class Game {
 				.setColor("Random")
 				.toJSON(),
 		]
+	}
+
+	score(category: ScorecardKey) {
+		if (!this.activeTurn) throw new Error("uh")
+		const player = this.getPlayer(this.activeTurn.playerId)
+		if (!player) throw new Error("uh")
+		const points = player.getPointsInCategory(
+			category,
+			this.activeTurn.dice!
+		)
+		if (points === null) throw new Error("uh")
+		player.addPoints(category, points)
+		this.startNextPlayer()
+		this.runTurn(this.activeTurn.playerId)
 	}
 }
 

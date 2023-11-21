@@ -103,7 +103,7 @@ export const bot = new CrossBuild({
 			},
 		}),
 	],
-	componentPaths: ["./commands", "./buttons"],
+	componentPaths: ["./commands", "./buttons", "./selectMenus"],
 	customChecks: [isInGame, isGameOwner, isYourTurn],
 })
 

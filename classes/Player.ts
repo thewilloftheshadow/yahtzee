@@ -7,19 +7,13 @@ type Scorecard = {
 	fours: number | null
 	fives: number | null
 	sixes: number | null
-	threeOfAKind: boolean
-	fourOfAKind: boolean
-	fullHouse: boolean
-	smallStraight: boolean
-	largeStraight: boolean
-	yahtzee: boolean
-	chance: {
-		one: number
-		two: number
-		three: number
-		four: number
-		five: number
-	} | null
+	threeOfAKind: number | null
+	fourOfAKind: number | null
+	fullHouse: number | null
+	smallStraight: number | null
+	largeStraight: number | null
+	yahtzee: number | null
+	chance: number | null
 	yahtzeeBonus: number | null
 }
 
@@ -34,12 +28,12 @@ export class Player {
 		fours: null,
 		fives: null,
 		sixes: null,
-		threeOfAKind: false,
-		fourOfAKind: false,
-		fullHouse: false,
-		smallStraight: false,
-		largeStraight: false,
-		yahtzee: false,
+		threeOfAKind: null,
+		fourOfAKind: null,
+		fullHouse: null,
+		smallStraight: null,
+		largeStraight: null,
+		yahtzee: null,
 		chance: null,
 		yahtzeeBonus: null,
 	}
@@ -48,9 +42,12 @@ export class Player {
 	}
 
 	remainingCategoryCount() {
-		return Object.values(this.scorecard).filter(
-			(x) => x === null || x === false
-		).length
+		return Object.values(this.scorecard).filter((x) => x === null).length
+	}
+
+	addPoints(category: ScorecardKey, points: number) {
+		if (this.scorecard[category] !== null) throw new Error("uh")
+		this.scorecard[category] = points
 	}
 
 	getPointsInCategory(

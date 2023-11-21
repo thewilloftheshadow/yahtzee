@@ -1,10 +1,10 @@
 import { Component, CrossBuild, ReceivedInteraction } from "crossbuild"
 import { getGame } from "../index.js"
-import { ButtonInteraction } from "discord.js"
+import { ScorecardKey } from "../classes/Player.js"
 
 export default class Btn extends Component {
 	constructor(client: CrossBuild) {
-		super("resend", "button", client, {
+		super("score", "selectMenu", client, {
 			customChecks: ["isInGame", "isYourTurn"],
 		})
 	}
@@ -20,11 +20,11 @@ export default class Btn extends Component {
 				ephemeral: true,
 			})
 
-		await interaction.acknowledge({})
-		await (interaction.original as ButtonInteraction).message
-			.delete()
-			.catch(() => {})
+		const selected = interaction.selectMenuValues?.shift() as ScorecardKey // get first element
+		if (!selected) throw new Error("uh")
 
-		game.runTurn(interaction.user.id, true)
+		await interaction.acknowledge({})
+		
+		game.score
 	}
 }
