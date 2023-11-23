@@ -100,7 +100,9 @@ export class Game {
 		const allPlayers = this.players.filter(
 			(x) =>
 				x.remainingCategoryCount() > 0 &&
-				x.id !== this.activeTurn?.playerId
+				(this.players.length > 1
+					? x.id !== this.activeTurn?.playerId
+					: true)
 		)
 		if (allPlayers.length === 0) return this.endGame()
 		const player = allPlayers.find(
