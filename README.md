@@ -6,6 +6,8 @@ It was written for the JT-99 Discord Bot Competition in November of 2023.
 
 [The hosted version can be found here.](https://discord.com/api/oauth2/authorize?client_id=540212892062973962&permissions=274878254080&scope=applications.commands%20bot)
 
+Fun fact: all the die emojis used in this bot were [hand designed myself from scratch](https://www.figma.com/file/vTx9cJBoLRaHm9IkwmBVVw/Dice?type=design&node-id=0%3A1&mode=design&t=ETIqYUlHfy9tPL54-1)!
+
 ## Commands
 
 -   /yahtzee - Starts a new game of Yahtzee
