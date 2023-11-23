@@ -2,11 +2,15 @@
 
 This is a Discord bot that allows you to play Yahtzee with your friends.
 
-It was written for the JT-99 Discord Bot Competition in November of 2023.
+## Notes
 
-[The hosted version can be found here.](https://discord.com/api/oauth2/authorize?client_id=540212892062973962&permissions=274878254080&scope=applications.commands%20bot)
+- This bot was written for the JT-99 Discord Bot Competition in November of 2023.
 
-Fun fact: all the die emojis used in this bot were [hand designed myself from scratch](https://www.figma.com/file/vTx9cJBoLRaHm9IkwmBVVw/Dice?type=design&node-id=0%3A1&mode=design&t=ETIqYUlHfy9tPL54-1)!
+- [The hosted version can be found here.](https://discord.com/api/oauth2/authorize?client_id=540212892062973962&permissions=274878254080&scope=applications.commands%20bot)
+
+- Fun fact: all the die emojis used in this bot were [hand designed myself from scratch](https://www.figma.com/file/vTx9cJBoLRaHm9IkwmBVVw/Dice?type=design&node-id=0%3A1&mode=design&t=ETIqYUlHfy9tPL54-1)!
+
+- [I spent a total of 8 hours and 21 minutes as of the writing of this README.](https://wakatime.com/@theshadowdev/projects/vujwtlsfpe?start=2023-10-20&end=2023-12-31)
 
 ## Commands
 
