@@ -44,7 +44,7 @@ export const getGame = (id: string) => {
 }
 
 export const getPlayerGame = (id: string) => {
-	return games.find((game) => game.players.filter((x) => x.id === id))
+	return games.find((game) => game.players.find((p) => p.id === id))
 }
 
 const isInGame: CustomCheckFunction = async (interaction) => {
@@ -52,6 +52,19 @@ const isInGame: CustomCheckFunction = async (interaction) => {
 	if (!getPlayerGame(interaction.user.id)) {
 		return {
 			content: "You are not in a game",
+			ephemeral: true,
+		} satisfies GeneratedMessage
+	}
+	return null
+}
+
+const notInGame: CustomCheckFunction = async (interaction) => {
+	if (!interaction.user) throw new Error("uh")
+	const game = getPlayerGame(interaction.user.id)
+	console.log(game)
+	if (getPlayerGame(interaction.user.id)) {
+		return {
+			content: "You are already in a game",
 			ephemeral: true,
 		} satisfies GeneratedMessage
 	}
@@ -104,7 +117,7 @@ export const bot = new CrossBuild({
 		}),
 	],
 	componentPaths: ["./commands", "./buttons", "./selectMenus"],
-	customChecks: [isInGame, isGameOwner, isYourTurn],
+	customChecks: [isInGame, isGameOwner, isYourTurn, notInGame],
 })
 
 bot.on("debug", (message) => console.log(message))

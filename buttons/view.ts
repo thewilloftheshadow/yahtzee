@@ -1,12 +1,9 @@
 import { Component, CrossBuild, ReceivedInteraction } from "crossbuild"
 import { getGame } from "../index.js"
-import { ScorecardKey } from "../classes/Player.js"
 
 export default class Btn extends Component {
 	constructor(client: CrossBuild) {
-		super("score", "selectMenu", client, {
-			customChecks: ["isInGame", "isYourTurn"],
-		})
+		super("view", "button", client, {})
 	}
 
 	override async run(interaction: ReceivedInteraction) {
@@ -16,15 +13,14 @@ export default class Btn extends Component {
 		const game = getGame(gameId)
 		if (!game)
 			return interaction.reply({
-				content: "Game not found",
+				content: "Game no longer stored",
 				ephemeral: true,
 			})
 
-		const selected = interaction.selectMenuValues?.shift() as ScorecardKey // get first element
-		if (!selected) throw new Error("uh")
-
-		await interaction.acknowledge({})
-
-		game.score(selected)
+		// send the player's scorecard
+		await interaction.reply({
+			ephemeral: true,
+			...game.generateMessage("total", interaction.user.id),
+		})
 	}
 }

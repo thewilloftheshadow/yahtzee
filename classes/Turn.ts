@@ -7,11 +7,15 @@ type Die = {
 
 type Dice = [Die, Die, Die, Die, Die] | null
 
+/**
+ * A Turn is the active dice and roll count that a player is using during their game turn.
+ * This is stored on Game#activeTurn
+ * @see Game#activeTurn
+ */
 export class Turn {
 	playerId: Player["id"]
 	dice: Dice = null
 	rolls = 0
-	messageId?: string
 	constructor(playerId: Player["id"]) {
 		this.playerId = playerId
 	}

@@ -19,6 +19,9 @@ type Scorecard = {
 
 export type ScorecardKey = keyof Scorecard
 
+/**
+ * A Player is the class that contains the scorecard of a player in a game
+ */
 export class Player {
 	id: string
 	scorecard: Scorecard = {
@@ -41,15 +44,75 @@ export class Player {
 		this.id = id
 	}
 
+	/**
+	 * @returns The number of categories that have not been scored yet
+	 */
 	remainingCategoryCount() {
-		return Object.values(this.scorecard).filter((x) => x === null).length
+		return Object.keys(this.scorecard).filter(
+			(x) =>
+				this.scorecard[x as ScorecardKey] === null &&
+				x !== "yahtzeeBonus"
+		).length
 	}
 
+	/**
+	 * Add points to a category on the scorecard
+	 * @param category The category to add points to
+	 * @param points The number of points to add
+	 */
 	addPoints(category: ScorecardKey, points: number) {
 		if (this.scorecard[category] !== null) throw new Error("uh")
 		this.scorecard[category] = points
 	}
 
+	/**
+	 * @returns If the upper section total is 63 or higher, return 35, otherwise return 0
+	 */
+	getUpperBonus() {
+		const upperTotal = this.getTotal("upper")
+		if (upperTotal >= 63) return 35
+		return 0
+	}
+
+	/**
+	 * Get the total score of either a section or the overall scorecard
+	 * @param section The section to get the total of
+	 * @returns The total of the section
+	 */
+	getTotal(section: "upper" | "lower" | "overall" | "upperNoBonus"): number {
+		switch (section) {
+			case "upper":
+			case "upperNoBonus":
+				return (this.scorecard.aces ?? 0) +
+					(this.scorecard.twos ?? 0) +
+					(this.scorecard.threes ?? 0) +
+					(this.scorecard.fours ?? 0) +
+					(this.scorecard.fives ?? 0) +
+					(this.scorecard.sixes ?? 0) +
+					section ===
+					"upperNoBonus"
+					? this.getUpperBonus()
+					: 0
+
+			case "lower":
+				return (
+					(this.scorecard.threeOfAKind ?? 0) +
+					(this.scorecard.fourOfAKind ?? 0) +
+					(this.scorecard.fullHouse ?? 0) +
+					(this.scorecard.smallStraight ?? 0) +
+					(this.scorecard.largeStraight ?? 0) +
+					(this.scorecard.yahtzee ?? 0) +
+					(this.scorecard.chance ?? 0) +
+					(this.scorecard.yahtzeeBonus ?? 0)
+				)
+			case "overall":
+				return this.getTotal("upper") + this.getTotal("lower")
+		}
+	}
+
+	/**
+	 * Get the points of each category, used for the scorecard message
+	 */
 	getPointsInCategory(
 		category: ScorecardKey,
 		dice: typeof Turn.prototype.dice
