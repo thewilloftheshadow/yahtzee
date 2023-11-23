@@ -10,21 +10,30 @@ export default class Btn extends Component {
 	}
 
 	override async run(interaction: ReceivedInteraction) {
-		if (!interaction.user) throw new Error("uh")
-		const gameId = interaction.key.split(":")[1]
+		try {
+			if (!interaction.user) throw new Error("uh")
+			const gameId = interaction.key.split(":")[1]
 
-		const game = getGame(gameId)
-		if (!game)
-			return interaction.reply({
-				content: "Game not found",
+			const game = getGame(gameId)
+			if (!game)
+				return interaction.reply({
+					content: "Game not found",
+					ephemeral: true,
+				})
+
+			const selected =
+				interaction.selectMenuValues?.shift() as ScorecardKey // get first element
+			if (!selected) throw new Error("uh")
+
+			await interaction.acknowledge({})
+
+			game.score(selected)
+		} catch (e) {
+			await interaction.reply({
+				content: "An error occurred",
 				ephemeral: true,
 			})
-
-		const selected = interaction.selectMenuValues?.shift() as ScorecardKey // get first element
-		if (!selected) throw new Error("uh")
-
-		await interaction.acknowledge({})
-
-		game.score(selected)
+			console.error(e)
+		}
 	}
 }

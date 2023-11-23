@@ -10,30 +10,38 @@ export default class Btn extends Component {
 	}
 
 	override async run(interaction: ReceivedInteraction) {
-		if (!interaction.user) throw new Error("uh")
-		const [playerId, gameId, diceIndex] = interaction.key
-			.split(":")[1]
-			.split(",")
+		try {
+			if (!interaction.user) throw new Error("uh")
+			const [playerId, gameId, diceIndex] = interaction.key
+				.split(":")[1]
+				.split(",")
 
-		const game = getGame(gameId)
-		if (!game || !game.activeTurn)
-			return interaction.reply({
-				content: "Game not found",
+			const game = getGame(gameId)
+			if (!game || !game.activeTurn)
+				return interaction.reply({
+					content: "Game not found",
+					ephemeral: true,
+				})
+
+			if (playerId !== interaction.user.id)
+				return interaction.reply({
+					content: "It's not your turn",
+					ephemeral: true,
+				})
+
+			await interaction.acknowledge({})
+
+			game.activeTurn.toggleDice(parseInt(diceIndex))
+
+			void (interaction.original as ButtonInteraction).message.edit(
+				game.generateMessage()
+			)
+		} catch (e) {
+			await interaction.reply({
+				content: "An error occurred",
 				ephemeral: true,
 			})
-
-		if (playerId !== interaction.user.id)
-			return interaction.reply({
-				content: "It's not your turn",
-				ephemeral: true,
-			})
-
-		await interaction.acknowledge({})
-
-		game.activeTurn.toggleDice(parseInt(diceIndex))
-
-		void (interaction.original as ButtonInteraction).message.edit(
-			game.generateMessage()
-		)
+			console.error(e)
+		}
 	}
 }

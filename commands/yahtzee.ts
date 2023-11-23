@@ -11,10 +11,21 @@ export default class Cmd extends Component {
 	}
 
 	override async run(interaction: ReceivedInteraction) {
-		if (!interaction.user || !interaction.channel) throw new Error("uh")
-		const newGame = new Game(interaction.user!.id, interaction.channel.id)
-		games.push(newGame)
-		const m = await interaction.reply(newGame.generateJoiningMessage())
-		newGame.messageId = m.id
+		try {
+			if (!interaction.user || !interaction.channel) throw new Error("uh")
+			const newGame = new Game(
+				interaction.user!.id,
+				interaction.channel.id
+			)
+			games.push(newGame)
+			const m = await interaction.reply(newGame.generateJoiningMessage())
+			newGame.messageId = m.id
+		} catch (e) {
+			await interaction.reply({
+				content: "An error occurred",
+				ephemeral: true,
+			})
+			console.error(e)
+		}
 	}
 }

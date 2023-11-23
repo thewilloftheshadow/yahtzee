@@ -9,21 +9,29 @@ export default class Btn extends Component {
 	}
 
 	override async run(interaction: ReceivedInteraction) {
-		// check if we have a valid game
-		if (!interaction.user) throw new Error("uh")
-		const gameId = interaction.key.split(":")[1]
-		const game = getGame(gameId)
-		if (!game)
-			return interaction.reply({
-				content: "Game not found",
+		try {
+			// check if we have a valid game
+			if (!interaction.user) throw new Error("uh")
+			const gameId = interaction.key.split(":")[1]
+			const game = getGame(gameId)
+			if (!game)
+				return interaction.reply({
+					content: "Game not found",
+					ephemeral: true,
+				})
+
+			// no response
+			await interaction.acknowledge({})
+
+			// resend the message using the resend parameter
+			await game.deleteOldMessage()
+			game.runTurn(interaction.user.id, true)
+		} catch (e) {
+			await interaction.reply({
+				content: "An error occurred",
 				ephemeral: true,
 			})
-
-		// no response
-		await interaction.acknowledge({})
-
-		// resend the message using the resend parameter
-		await game.deleteOldMessage()
-		game.runTurn(interaction.user.id, true)
+			console.error(e)
+		}
 	}
 }
