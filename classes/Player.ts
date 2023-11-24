@@ -82,18 +82,16 @@ export class Player {
 	getTotal(section: "upper" | "lower" | "overall" | "upperNoBonus"): number {
 		switch (section) {
 			case "upper":
+				return this.getTotal("upperNoBonus") + this.getUpperBonus()
 			case "upperNoBonus":
-				return (this.scorecard.aces ?? 0) +
+				return (
+					(this.scorecard.aces ?? 0) +
 					(this.scorecard.twos ?? 0) +
 					(this.scorecard.threes ?? 0) +
 					(this.scorecard.fours ?? 0) +
 					(this.scorecard.fives ?? 0) +
-					(this.scorecard.sixes ?? 0) +
-					section ===
-					"upperNoBonus"
-					? this.getUpperBonus()
-					: 0
-
+					(this.scorecard.sixes ?? 0)
+				)
 			case "lower":
 				return (
 					(this.scorecard.threeOfAKind ?? 0) +
