@@ -407,7 +407,7 @@ ${
 							options: checked.map((x) => ({
 								label: `${x.name} (${x.points} point${
 									x.points === 1 ? "" : "s"
-								}})`,
+								})`,
 								value: `${x.category}`,
 							})),
 							placeholder: "Score Dice",
