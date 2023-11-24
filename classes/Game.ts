@@ -97,18 +97,17 @@ export class Game {
 	 * Start the next player's turn, or end the game if there are no more players
 	 */
 	async startNextPlayer() {
-		const allPlayers = this.players.filter(
-			(x) =>
-				x.remainingCategoryCount() > 0 &&
-				(this.players.length > 1
-					? x.id !== this.activeTurn?.playerId
-					: true)
-		)
-		if (allPlayers.length === 0) return this.endGame()
-		const player = allPlayers.find(
-			(x) => x.id !== this.activeTurn?.playerId
-		)
-		if (!player) throw new Error("uh")
+		// get the next player from the queue that have remainingCategoryCount greater than 0
+		const allPlayers = this.players
+			.filter((x) => x.remainingCategoryCount() > 0)
+			.sort((a, b) =>
+				a.remainingCategoryCount() > b.remainingCategoryCount() ? 1 : -1
+			)
+		if (allPlayers.length === 0) {
+			await this.endGame()
+			return
+		}
+		const player = allPlayers[0]
 		await this.deleteOldMessage()
 		this.activeTurn = new Turn(player.id)
 		await this.sendMessage(this.generateMessage("firstRoll"), false)
