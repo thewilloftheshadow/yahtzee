@@ -69,7 +69,7 @@ export class Player {
 	 * @returns If the upper section total is 63 or higher, return 35, otherwise return 0
 	 */
 	getUpperBonus() {
-		const upperTotal = this.getTotal("upper")
+		const upperTotal = this.getTotal("upperNoBonus")
 		if (upperTotal >= 63) return 35
 		return 0
 	}
