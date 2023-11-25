@@ -44,7 +44,7 @@ export const getGame = (id: string) => {
 }
 
 export const getPlayerGame = (id: string) => {
-	return games.find((game) => game.players.find((p) => p.id === id))
+	return games.find((game) => game.status !== "ended" && game.players.find((p) => p.id === id))
 }
 
 const isInGame: CustomCheckFunction = async (interaction) => {
