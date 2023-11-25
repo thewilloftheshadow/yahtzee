@@ -101,7 +101,7 @@ export class Game {
 		const allPlayers = this.players
 			.filter((x) => x.remainingCategoryCount() > 0)
 			.sort((a, b) =>
-				a.remainingCategoryCount() > b.remainingCategoryCount() ? 1 : -1
+				a.remainingCategoryCount() < b.remainingCategoryCount() ? 1 : -1
 			)
 		if (allPlayers.length === 0) {
 			await this.endGame()
